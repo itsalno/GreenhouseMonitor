@@ -19,10 +19,10 @@ export default function App() {
             : (prod ? 'wss://' + baseUrl + '?id=' + randomUid : 'ws://' + baseUrl + '?id=' + randomUid);
         setServerUrl(url);
     }, [prod, baseUrl, wsUrl]);
-    return (<>
+    return (<div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-300">
         {serverUrl && <WsClientProvider url={serverUrl}>
             <ApplicationRoutes/>
         </WsClientProvider>}
         {!prod && <DevTools/>}
-    </>);
+    </div>);
 }

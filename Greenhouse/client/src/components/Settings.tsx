@@ -1,56 +1,75 @@
-import {AdminChangesPreferencesDto} from "../generated-client.ts";
-import {weatherStationClient} from "../apiControllerClients.ts";
 import toast from "react-hot-toast";
 import {useState} from "react";
 import {useAtom} from "jotai";
 import {JwtAtom} from "../atoms.ts";
 
 export default function Settings() {
-    
     const [jwt] = useAtom(JwtAtom);
 
+    // ESP32 default thresholds
+    const [tempHigh, setTempHigh] = useState(28.0);
+    const [tempLow, setTempLow] = useState(24.0);
+    const [humidityHigh, setHumidityHigh] = useState(85.0);
+    const [humidityLow, setHumidityLow] = useState(60.0);
+
     if (!jwt || jwt.length < 1) {
-        return (<div className="flex flex-col items-center justify-center h-screen">please sign in to continue</div>)
+        return (<div className="flex flex-col items-center justify-center h-screen bg-green-100">please sign in to continue</div>)
     }
-    
-    return (<div className="flex flex-row items-center justify-around h-screen">
 
-        {
-            ["Device A: Weather station A: Moss", "Device B: Weather station B: Oslo"].map((device, index) => {
+    const handleSave = () => {
+        // TODO: Wire up to backend if needed
+        toast.success("Thresholds saved (not yet sent to backend)");
+    };
 
-                //Here i just use some hardcoded values for the device details
-                const [updateState, setUpdateState] = useState<AdminChangesPreferencesDto>({
-                    interval: "Minute",
-                    unit: "Celcius",
-                    deviceId: device
-                });
-
-                return <div key={device} className="flex flex-col">
-                    <p className="">{device}</p>
-                    <img className="w-32"
-                         src={"https://joy-it.net/files/files/Produkte/SBC-NodeMCU-ESP32/SBC-NodeMCU-ESP32-01.png"}/>
-                    <button className="btn" onClick={() => {
-                        weatherStationClient.adminChangesPreferences(updateState, localStorage.getItem('jwt')!).then(resp => {
-                            toast('API sent preference change to edge devices')
-                        }).catch(e => {
-                            toast.error(JSON.parse(e))
-                        })
-                    }}>Change preferences for device
-                    </button>
-                    <label className="input">
-                        <b>Interval:</b>
-                        <input value={updateState.interval} placeholder="Interval" type="text" className="grow"
-                               onChange={event => setUpdateState({...updateState, interval: event.target.value})}/>
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300">
+            <div className="bg-white bg-opacity-90 rounded-3xl shadow-2xl p-8 flex flex-col items-center w-[350px] border-4 border-green-400">
+                <img src="https://cdn-icons-png.flaticon.com/512/2909/2909769.png" alt="Greenhouse" className="w-20 mb-4 drop-shadow-lg"/>
+                <h2 className="text-3xl font-bold mb-4 text-green-800 flex items-center gap-2">
+                    <span>🌱</span> Greenhouse Thresholds
+                </h2>
+                <div className="flex flex-col gap-5 w-full">
+                    <label className="flex flex-col text-green-900 font-semibold">
+                        Temperature High (°C)
+                        <input
+                            type="number"
+                            value={tempHigh}
+                            onChange={e => setTempHigh(parseFloat(e.target.value))}
+                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                        />
                     </label>
-                    <label className="input">
-                        <b>Unit:</b>
-                        <input value={updateState.unit} placeholder="Unit" type="text" className="grow"
-                               onChange={event => setUpdateState({...updateState, unit: event.target.value})}/>
+                    <label className="flex flex-col text-green-900 font-semibold">
+                        Temperature Low (°C)
+                        <input
+                            type="number"
+                            value={tempLow}
+                            onChange={e => setTempLow(parseFloat(e.target.value))}
+                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                        />
+                    </label>
+                    <label className="flex flex-col text-green-900 font-semibold">
+                        Humidity High (%)
+                        <input
+                            type="number"
+                            value={humidityHigh}
+                            onChange={e => setHumidityHigh(parseFloat(e.target.value))}
+                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                        />
+                    </label>
+                    <label className="flex flex-col text-green-900 font-semibold">
+                        Humidity Low (%)
+                        <input
+                            type="number"
+                            value={humidityLow}
+                            onChange={e => setHumidityLow(parseFloat(e.target.value))}
+                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                        />
                     </label>
                 </div>
-            })
-        };
-
-
-    </div>);
+                <button className="btn btn-success mt-6 w-full text-lg font-bold shadow-green-200 shadow-md hover:scale-105 transition-transform" onClick={handleSave}>
+                    🌿 Save thresholds
+                </button>
+            </div>
+        </div>
+    );
 }
