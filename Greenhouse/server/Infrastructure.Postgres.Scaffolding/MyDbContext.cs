@@ -13,6 +13,8 @@ public partial class MyDbContext : DbContext
     public virtual DbSet<Devicelog> Devicelogs { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    
+    public virtual DbSet<Thresholds> Thresholds { get; set; }
 
     public virtual DbSet<SensorData> SensorData { get; set; }
 
@@ -29,6 +31,17 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.Timestamp).HasColumnName("timestamp");
             entity.Property(e => e.Unit).HasColumnName("unit");
             entity.Property(e => e.Value).HasColumnName("value");
+        });
+        
+        modelBuilder.Entity<Thresholds>(entity =>
+        {
+            entity.ToTable("thresholds");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.TempLow).HasColumnName("templow");
+            entity.Property(e => e.TempHigh).HasColumnName("temphigh");
+            entity.Property(e => e.HumidityLow).HasColumnName("humiditylow");
+            entity.Property(e => e.HumidityHigh).HasColumnName("humidityhigh");
         });
 
         modelBuilder.Entity<User>(entity =>

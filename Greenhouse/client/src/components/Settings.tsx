@@ -1,24 +1,52 @@
 import toast from "react-hot-toast";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useAtom} from "jotai";
 import {JwtAtom} from "../atoms.ts";
+import {thresholdsClient} from "../apiControllerClients.ts";
 
 export default function Settings() {
     const [jwt] = useAtom(JwtAtom);
-
-    // ESP32 default thresholds
     const [tempHigh, setTempHigh] = useState(28.0);
     const [tempLow, setTempLow] = useState(24.0);
     const [humidityHigh, setHumidityHigh] = useState(85.0);
     const [humidityLow, setHumidityLow] = useState(60.0);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!jwt) return;
+        setLoading(true);
+        thresholdsClient.get()
+            .then(data => {
+                setTempHigh(data.tempHigh ?? 28.0);
+                setTempLow(data.tempLow ?? 24.0);
+                setHumidityHigh(data.humidityHigh ?? 85.0);
+                setHumidityLow(data.humidityLow ?? 60.0);
+            })
+            .catch(() => {
+                toast.error("Failed to load thresholds");
+            })
+            .finally(() => setLoading(false));
+    }, [jwt]);
 
     if (!jwt || jwt.length < 1) {
         return (<div className="flex flex-col items-center justify-center h-screen bg-green-100">please sign in to continue</div>)
     }
 
-    const handleSave = () => {
-        // TODO: Wire up to backend if needed
-        toast.success("Thresholds saved (not yet sent to backend)");
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            await thresholdsClient.update({
+                tempHigh,
+                tempLow,
+                humidityHigh,
+                humidityLow
+            });
+            toast.success("Thresholds updated!");
+        } catch (err: any) {
+            toast.error("Failed to update thresholds");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -36,6 +64,7 @@ export default function Settings() {
                             value={tempHigh}
                             onChange={e => setTempHigh(parseFloat(e.target.value))}
                             className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                            disabled={loading}
                         />
                     </label>
                     <label className="flex flex-col text-green-900 font-semibold">
@@ -45,6 +74,7 @@ export default function Settings() {
                             value={tempLow}
                             onChange={e => setTempLow(parseFloat(e.target.value))}
                             className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                            disabled={loading}
                         />
                     </label>
                     <label className="flex flex-col text-green-900 font-semibold">
@@ -54,6 +84,7 @@ export default function Settings() {
                             value={humidityHigh}
                             onChange={e => setHumidityHigh(parseFloat(e.target.value))}
                             className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                            disabled={loading}
                         />
                     </label>
                     <label className="flex flex-col text-green-900 font-semibold">
@@ -63,12 +94,15 @@ export default function Settings() {
                             value={humidityLow}
                             onChange={e => setHumidityLow(parseFloat(e.target.value))}
                             className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
+                            disabled={loading}
                         />
                     </label>
                 </div>
-                <button className="btn btn-success mt-6 w-full text-lg font-bold shadow-green-200 shadow-md hover:scale-105 transition-transform" onClick={handleSave}>
-                    🌿 Save thresholds
-                </button>
+                <div className="flex justify-center w-full mt-2">
+                    <button className="btn btn-success text-lg font-bold shadow-green-200 shadow-md hover:scale-105 transition-transform px-8 py-3" onClick={handleSave} disabled={loading}>
+                        {loading ? "Saving..." : "🌿 Save thresholds"}
+                    </button>
+                </div>
             </div>
         </div>
     );

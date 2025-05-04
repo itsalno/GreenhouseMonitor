@@ -355,6 +355,87 @@ export class SubscriptionClient {
     }
 }
 
+export class ThresholdsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    get(): Promise<Thresholds> {
+        let url_ = this.baseUrl + "/api/sensor/thresholds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<Thresholds> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Thresholds;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Thresholds>(null as any);
+    }
+
+    update(updated: Thresholds): Promise<Thresholds> {
+        let url_ = this.baseUrl + "/api/sensor/thresholds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updated);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<Thresholds> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Thresholds;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Thresholds>(null as any);
+    }
+}
+
 export class WeatherStationClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -510,6 +591,14 @@ export interface ExampleBroadcastDto {
     message?: string;
 }
 
+export interface Thresholds {
+    id?: number;
+    tempLow?: number;
+    tempHigh?: number;
+    humidityLow?: number;
+    humidityHigh?: number;
+}
+
 export interface Devicelog {
     deviceid?: string;
     value?: number;
@@ -528,12 +617,12 @@ export interface ApplicationBaseDto {
     eventType?: string;
 }
 
-export interface AdminHasDeletedData extends ApplicationBaseDto {
+export interface ServerBroadcastsLiveDataToDashboard extends ApplicationBaseDto {
+    logs?: SensorData[];
     eventType?: string;
 }
 
-export interface ServerBroadcastsLiveDataToDashboard extends ApplicationBaseDto {
-    logs?: SensorData[];
+export interface AdminHasDeletedData extends ApplicationBaseDto {
     eventType?: string;
 }
 
@@ -563,8 +652,8 @@ export interface ServerSendsErrorMessage extends BaseDto {
 
 /** Available eventType and string constants */
 export enum StringConstants {
-    AdminHasDeletedData = "AdminHasDeletedData",
     ServerBroadcastsLiveDataToDashboard = "ServerBroadcastsLiveDataToDashboard",
+    AdminHasDeletedData = "AdminHasDeletedData",
     MemberLeftNotification = "MemberLeftNotification",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",

@@ -274,6 +274,56 @@
         }
       }
     },
+    "/api/sensor/thresholds": {
+      "get": {
+        "tags": [
+          "Thresholds"
+        ],
+        "operationId": "Thresholds_Get",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Thresholds"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Thresholds"
+        ],
+        "operationId": "Thresholds_Update",
+        "requestBody": {
+          "x-name": "updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Thresholds"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Thresholds"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/GetLogs": {
       "get": {
         "tags": [
@@ -471,6 +521,32 @@
           }
         }
       },
+      "Thresholds": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tempLow": {
+            "type": "number",
+            "format": "float"
+          },
+          "tempHigh": {
+            "type": "number",
+            "format": "float"
+          },
+          "humidityLow": {
+            "type": "number",
+            "format": "float"
+          },
+          "humidityHigh": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
       "Devicelog": {
         "type": "object",
         "additionalProperties": false,
@@ -509,22 +585,6 @@
           }
         }
       },
-      "AdminHasDeletedData": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ApplicationBaseDto"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "eventType": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
       "ApplicationBaseDto": {
         "type": "object",
         "x-abstract": true,
@@ -550,6 +610,22 @@
                   "$ref": "#/components/schemas/SensorData"
                 }
               },
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "AdminHasDeletedData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApplicationBaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
               "eventType": {
                 "type": "string"
               }
@@ -662,8 +738,8 @@
         "type": "string",
         "description": "Available eventType and string constants",
         "enum": [
-          "AdminHasDeletedData",
           "ServerBroadcastsLiveDataToDashboard",
+          "AdminHasDeletedData",
           "MemberLeftNotification",
           "ExampleClientDto",
           "ExampleServerResponse",
