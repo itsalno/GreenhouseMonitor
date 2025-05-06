@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Greenhouse", "Greenhouse", "{AE41BC58-B032-9B4F-2D1B-89275A6BBD27}"
+	ProjectSection(SolutionItems) = preProject
+		Greenhouse\README.md = Greenhouse\README.md
+		Greenhouse\todo.txt = Greenhouse\todo.txt
+		Greenhouse\image.png = Greenhouse\image.png
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{45D139CF-87BC-5D8C-8576-76A7BC7BA685}"
 EndProject

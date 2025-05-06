@@ -13,7 +13,7 @@ RUN dotnet publish "server/Startup/Startup.csproj" \
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-alpine
 WORKDIR /app
 COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://0.0.0.0:8181
-EXPOSE 8181
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+EXPOSE 8080
 
 ENTRYPOINT ["./Startup"]
