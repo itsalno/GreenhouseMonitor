@@ -8,6 +8,5 @@ export default defineConfig({
     babel: {
       presets: ['jotai/babel/preset'],
     },
-  }),     tailwindcss()
-  ],
+  }), tailwindcss()]
 })
