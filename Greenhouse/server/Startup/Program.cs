@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using NSwag.Generation;
 using Scalar.AspNetCore;
 using Startup.Documentation;
-// using Startup.Proxy;
+using Startup.Proxy;
 
 namespace Startup;
 
@@ -53,7 +53,7 @@ public class Program
             conf.DocumentProcessors.Add(new AddAllDerivedTypesProcessor());
             conf.DocumentProcessors.Add(new AddStringConstantsProcessor());
         });
-        // services.AddSingleton<IProxyConfig, ProxyConfig>();
+        services.AddSingleton<IProxyConfig, ProxyConfig>();
     }
 
     public static async Task ConfigureMiddleware(WebApplication app)
@@ -67,21 +67,17 @@ public class Program
                 await scope.ServiceProvider.GetRequiredService<Seeder>().Seed();
         }
 
-        // Use only the PORT env var (Render sets this)
-        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
         app.Urls.Clear();
-        app.Urls.Add($"http://0.0.0.0:{port}");
-
-        // app.Urls.Add($"http://0.0.0.0:{appOptions.REST_PORT}");
-        // app.Services.GetRequiredService<IProxyConfig>()
-        //     .StartProxyServer(appOptions.PORT, appOptions.REST_PORT, appOptions.WS_PORT);
+        app.Urls.Add($"http://0.0.0.0:{appOptions.REST_PORT}");
+        app.Services.GetRequiredService<IProxyConfig>()
+            .StartProxyServer(appOptions.PORT, appOptions.REST_PORT, appOptions.WS_PORT);
 
         app.ConfigureRestApi();
         if (!string.IsNullOrEmpty(appOptions.MQTT_BROKER_HOST))
             await app.ConfigureMqtt();
         else
             Console.WriteLine("Skipping MQTT service configuration");
-        await app.ConfigureWebsocketApi(int.Parse(port)); // Use the same port for WebSocket
+        await app.ConfigureWebsocketApi(appOptions.WS_PORT);
 
         app.MapGet("Acceptance", () => "Accepted");
 
