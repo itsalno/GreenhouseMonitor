@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Application.Interfaces.Infrastructure.MQTT;
+using Application.Services;
 using HiveMQtt.Client;
 using HiveMQtt.MQTT5.Types;
 
