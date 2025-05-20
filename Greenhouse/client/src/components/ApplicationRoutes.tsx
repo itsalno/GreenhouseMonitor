@@ -1,7 +1,8 @@
 import {Route, Routes, useNavigate} from "react-router";
 import AdminDashboard from "./Dashboard.tsx";
+import TresholdHistory from "./TresholdHistory";
 import useInitializeData from "../hooks/useInitializeData.tsx";
-import {DashboardRoute, SettingsRoute, SignInRoute} from '../routeConstants.ts';
+import {DashboardRoute, SettingsRoute, SignInRoute, TreshHistoryRoute} from '../routeConstants.ts';
 import useSubscribeToTopics from "../hooks/useSubscribeToTopics.tsx";
 import Settings from "./Settings.tsx";
 import Dock from "./Dock.tsx";
@@ -34,6 +35,7 @@ export default function ApplicationRoutes() {
             <Route element={<AdminDashboard/>} path={DashboardRoute}/>
             <Route element={<Settings/>} path={SettingsRoute}/>
             <Route element={<SignIn/>} path={SignInRoute}/>
+            <Route element={<TresholdHistory/>} path={TreshHistoryRoute}/>
 
         </Routes>
         <Dock/>

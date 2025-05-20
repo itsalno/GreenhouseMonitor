@@ -6,4 +6,6 @@ public interface IThresholdsRepository
 {
     Task<Thresholds?> GetAsync();
     Task<Thresholds> UpdateAsync(Thresholds updated);
+
+    Task<List<Thresholds>> GetAllAsync();
 }

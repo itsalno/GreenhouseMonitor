@@ -27,4 +27,13 @@ public class ThresholdsController : ControllerBase
         var result = await _service.UpdateThresholdsAsync(updated);
         return Ok(result);
     }
+    
+    [HttpGet]
+    [Route("api/sensor/AllThresholds")]
+    public async Task<ActionResult<Thresholds>> GetAll()
+    {
+        var thresholds = await _service.GetAllAsync();
+        if (thresholds == null) return NotFound();
+        return Ok(thresholds);
+    }
 }

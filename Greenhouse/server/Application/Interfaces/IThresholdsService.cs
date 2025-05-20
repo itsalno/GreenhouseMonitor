@@ -7,5 +7,7 @@ namespace Application.Services
     {
         Task<Thresholds?> GetThresholdsAsync();
         Task<Thresholds> UpdateThresholdsAsync(Thresholds updated);
+
+        Task<List<Thresholds>> GetAllAsync();
     }
 }

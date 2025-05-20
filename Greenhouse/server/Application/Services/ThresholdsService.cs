@@ -27,5 +27,12 @@ namespace Application.Services
 
             return result;
         }
+
+        public async Task<List<Thresholds>> GetAllAsync()
+        {
+           var result = await _repo.GetAllAsync();
+           return result;
+
+        }
     }
 }

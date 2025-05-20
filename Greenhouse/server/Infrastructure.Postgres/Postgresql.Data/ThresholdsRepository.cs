@@ -26,5 +26,12 @@ namespace Infrastructure.Postgres.Scaffolding
             await _context.SaveChangesAsync();
             return entity;
         }
+        
+        public async Task<List<Thresholds>> GetAllAsync()
+        {
+            return await _context.Thresholds.ToListAsync();
+        }
+        
+        
     }
 }

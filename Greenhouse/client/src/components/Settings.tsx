@@ -1,8 +1,10 @@
 import toast from "react-hot-toast";
-import {useEffect, useState} from "react";
+import {useEffect, useState, } from "react";
 import {useAtom} from "jotai";
 import {JwtAtom} from "../atoms.ts";
 import {thresholdsClient} from "../apiControllerClients.ts";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Settings() {
     const [jwt] = useAtom(JwtAtom);
@@ -11,6 +13,7 @@ export default function Settings() {
     const [humidityHigh, setHumidityHigh] = useState(85.0);
     const [humidityLow, setHumidityLow] = useState(60.0);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!jwt) return;
@@ -51,6 +54,15 @@ export default function Settings() {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300">
+            {/* Top-left History Button */}
+            <div className="absolute top-6 left-6">
+                <button
+                    onClick={() => navigate('/tresholdhistory')}
+                    className="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition"
+                >
+                    📜 See Threshold History
+                </button>
+            </div>
             <div className="bg-white bg-opacity-90 rounded-3xl shadow-2xl p-8 flex flex-col items-center w-[350px] border-4 border-green-400">
                 <img src="https://cdn-icons-png.flaticon.com/512/2909/2909769.png" alt="Greenhouse" className="w-20 mb-4 drop-shadow-lg"/>
                 <h2 className="text-3xl font-bold mb-4 text-green-800 flex items-center gap-2">
