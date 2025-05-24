@@ -13,15 +13,18 @@ export default function useSubscribeToTopics() {
     const {readyState} = useWsClient();
 
     useEffect(() => {
-        if (readyState != 1 || jwt == null || jwt.length < 1)
+        if (readyState !== 1 || jwt == null || jwt.length < 1)
             return;
         const subscribeDto: ChangeSubscriptionDto = {
             clientId: randomUid,
-            topicIds: [StringConstants.Dashboard],
+            topicIds: [StringConstants.Dashboard], 
         };
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
-            toast("You are subscribed to the dashboard topic");
-        })
+            toast("You are subscribed to the dashboard topic"); 
+        }).catch(error => {
+            const errorMessage = error && typeof error.message === 'string' ? error.message : 'Unknown error';
+            toast.error(`Failed to subscribe to dashboard: ${errorMessage}`);
+        });
 
     }, [readyState, jwt])
 }

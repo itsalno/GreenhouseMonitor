@@ -10,7 +10,6 @@ public partial class MyDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Devicelog> Devicelogs { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
     
@@ -20,18 +19,6 @@ public partial class MyDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Devicelog>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("devicelog_pkey");
-
-            entity.ToTable("devicelog", "weatherstation");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Deviceid).HasColumnName("deviceid");
-            entity.Property(e => e.Timestamp).HasColumnName("timestamp");
-            entity.Property(e => e.Unit).HasColumnName("unit");
-            entity.Property(e => e.Value).HasColumnName("value");
-        });
         
         modelBuilder.Entity<Thresholds>(entity =>
         {

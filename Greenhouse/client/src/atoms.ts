@@ -1,11 +1,11 @@
 import {atom} from 'jotai';
-import {Devicelog} from "./generated-client.ts";
 import {SensorData} from "./generated-client.ts";
 import {Thresholds} from  "./generated-client.ts"
 
 export const JwtAtom = atom<string>(localStorage.getItem('jwt') || '')
 
-export const DeviceLogsAtom = atom<Devicelog[]>([]);
 export const SensorDataAtom = atom<SensorData[]>([]);
 
 export const TresholdsAtom = atom<Thresholds[]>([]);
+
+export const MobileSidebarOpenAtom = atom(false);

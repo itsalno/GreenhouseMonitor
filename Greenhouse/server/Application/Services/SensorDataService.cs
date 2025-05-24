@@ -12,7 +12,7 @@ using Core.Domain.Entities;
 namespace Application.Services
 {
     public class SensorDataService(IMqttPublisher mqttPublisher,
-        IConnectionManager connectionManager,ISensorDataRepository repository) : ISensorDataService
+        IConnectionManager connectionManager, ISensorDataRepository repository, IThresholdsService thresholdsService) : ISensorDataService
     {
 
         

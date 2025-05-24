@@ -434,6 +434,39 @@ export class ThresholdsClient {
         }
         return Promise.resolve<Thresholds>(null as any);
     }
+
+    getAll(): Promise<Thresholds> {
+        let url_ = this.baseUrl + "/api/sensor/AllThresholds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<Thresholds> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as Thresholds;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Thresholds>(null as any);
+    }
 }
 
 export interface AuthResponseDto {
@@ -485,6 +518,17 @@ export interface ServerBroadcastsLiveDataToDashboard extends ApplicationBaseDto 
     eventType?: string;
 }
 
+export interface ThresholdUpdateBroadcastDto extends ApplicationBaseDto {
+    eventType?: string;
+    thresholdType?: string;
+    sensorId?: string | undefined;
+    oldValue?: number;
+    newValue?: number;
+    unit?: string;
+    timestamp?: Date;
+    changedByUserId?: string | undefined;
+}
+
 
 export interface MemberLeftNotification extends BaseDto {
     clientId?: string;
@@ -513,6 +557,7 @@ export interface ServerSendsErrorMessage extends BaseDto {
 export enum StringConstants {
     AdminHasDeletedData = "AdminHasDeletedData",
     ServerBroadcastsLiveDataToDashboard = "ServerBroadcastsLiveDataToDashboard",
+    ThresholdUpdateBroadcastDto = "ThresholdUpdateBroadcastDto",
     MemberLeftNotification = "MemberLeftNotification",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
@@ -520,6 +565,7 @@ export enum StringConstants {
     Pong = "Pong",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
     Dashboard = "Dashboard",
+    ThresholdsHistory = "ThresholdsHistory",
     Device = "Device",
     ChangePreferences = "ChangePreferences",
     Log = "Log",

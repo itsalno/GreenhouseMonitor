@@ -8,6 +8,6 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
 
         <App/>
-        <Toaster/>
+        <Toaster position="top-center"/>
     </BrowserRouter>,
 )

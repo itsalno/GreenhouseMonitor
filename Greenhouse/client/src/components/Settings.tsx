@@ -4,7 +4,7 @@ import {useAtom} from "jotai";
 import {JwtAtom} from "../atoms.ts";
 import {thresholdsClient} from "../apiControllerClients.ts";
 import { useNavigate } from "react-router-dom";
-
+import { FullPageSpinner } from "./Spinner.tsx"; 
 
 export default function Settings() {
     const [jwt] = useAtom(JwtAtom);
@@ -26,13 +26,21 @@ export default function Settings() {
                 setHumidityLow(data.humidityLow ?? 60.0);
             })
             .catch(() => {
-                toast.error("Failed to load thresholds");
+                toast.error("Failed to load current thresholds");
             })
             .finally(() => setLoading(false));
     }, [jwt]);
 
     if (!jwt || jwt.length < 1) {
-        return (<div className="flex flex-col items-center justify-center h-screen bg-green-100">please sign in to continue</div>)
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-gray-700 text-xl">
+                ⚙️ Please sign in to access settings.
+            </div>
+        )
+    }
+
+    if (loading) {
+        return <FullPageSpinner message="Loading current settings..." />;
     }
 
     const handleSave = async () => {
@@ -44,77 +52,99 @@ export default function Settings() {
                 humidityHigh,
                 humidityLow
             });
-            toast.success("Thresholds updated!");
+            toast.success("✅ Thresholds updated successfully!");
         } catch (err: any) {
-            toast.error("Failed to update thresholds");
+            toast.error("❌ Failed to update thresholds. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-200 via-green-100 to-green-300">
-            {/* Top-left History Button */}
-            <div className="absolute top-6 left-6">
+        // Root div adapts to AppLayout, AppLayout provides bg-green-50 and padding.
+        <div className="w-full">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-green-700">⚙️ Greenhouse Settings</h1>
                 <button
                     onClick={() => navigate('/tresholdhistory')}
-                    className="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition"
+                    className="bg-green-600 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-150 flex items-center"
                 >
-                    📜 See Threshold History
+                    <span className="mr-2">📜</span> See Threshold History
                 </button>
             </div>
-            <div className="bg-white bg-opacity-90 rounded-3xl shadow-2xl p-8 flex flex-col items-center w-[350px] border-4 border-green-400">
-                <img src="https://cdn-icons-png.flaticon.com/512/2909/2909769.png" alt="Greenhouse" className="w-20 mb-4 drop-shadow-lg"/>
-                <h2 className="text-3xl font-bold mb-4 text-green-800 flex items-center gap-2">
-                    <span>🌱</span> Greenhouse Thresholds
-                </h2>
-                <div className="flex flex-col gap-5 w-full">
-                    <label className="flex flex-col text-green-900 font-semibold">
-                        Temperature High (°C)
-                        <input
-                            type="number"
-                            value={tempHigh}
-                            onChange={e => setTempHigh(parseFloat(e.target.value))}
-                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
-                            disabled={loading}
-                        />
-                    </label>
-                    <label className="flex flex-col text-green-900 font-semibold">
-                        Temperature Low (°C)
-                        <input
-                            type="number"
-                            value={tempLow}
-                            onChange={e => setTempLow(parseFloat(e.target.value))}
-                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
-                            disabled={loading}
-                        />
-                    </label>
-                    <label className="flex flex-col text-green-900 font-semibold">
-                        Humidity High (%)
-                        <input
-                            type="number"
-                            value={humidityHigh}
-                            onChange={e => setHumidityHigh(parseFloat(e.target.value))}
-                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
-                            disabled={loading}
-                        />
-                    </label>
-                    <label className="flex flex-col text-green-900 font-semibold">
-                        Humidity Low (%)
-                        <input
-                            type="number"
-                            value={humidityLow}
-                            onChange={e => setHumidityLow(parseFloat(e.target.value))}
-                            className="input input-bordered mt-1 rounded-lg border-2 border-green-300 focus:border-green-600 focus:ring-green-200"
-                            disabled={loading}
-                        />
-                    </label>
+
+            {/* Settings Card - wider and consistent styling */}
+            <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 w-full max-w-2xl mx-auto">
+                <div className="text-center mb-6 md:mb-8">
+                    {/* Optional: Icon or image if desired, but keep it subtle */}
+                    {/* <img src="https://cdn-icons-png.flaticon.com/512/2909/2909769.png" alt="Greenhouse Icon" className="w-16 mx-auto mb-3"/> */}
+                    <h2 className="text-2xl font-semibold text-green-600">
+                        Adjust Threshold Values
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">Set the desired temperature and humidity ranges.</p>
                 </div>
-                <div className="flex justify-center w-full mt-2">
-                    <button className="btn btn-success text-lg font-bold shadow-green-200 shadow-md hover:scale-105 transition-transform px-8 py-3" onClick={handleSave} disabled={loading}>
-                        {loading ? "Saving..." : "🌿 Save thresholds"}
-                    </button>
-                </div>
+
+                <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label htmlFor="tempHigh" className="block text-sm font-medium text-gray-700 mb-1">Temperature High (°C)</label>
+                            <input
+                                id="tempHigh"
+                                type="number"
+                                step="0.1" // Allow decimal input
+                                value={tempHigh}
+                                onChange={e => setTempHigh(parseFloat(e.target.value))}
+                                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors duration-150"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="tempLow" className="block text-sm font-medium text-gray-700 mb-1">Temperature Low (°C)</label>
+                            <input
+                                id="tempLow"
+                                type="number"
+                                step="0.1"
+                                value={tempLow}
+                                onChange={e => setTempLow(parseFloat(e.target.value))}
+                                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors duration-150"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="humidityHigh" className="block text-sm font-medium text-gray-700 mb-1">Humidity High (%)</label>
+                            <input
+                                id="humidityHigh"
+                                type="number"
+                                step="0.1"
+                                value={humidityHigh}
+                                onChange={e => setHumidityHigh(parseFloat(e.target.value))}
+                                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors duration-150"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="humidityLow" className="block text-sm font-medium text-gray-700 mb-1">Humidity Low (%)</label>
+                            <input
+                                id="humidityLow"
+                                type="number"
+                                step="0.1"
+                                value={humidityLow}
+                                onChange={e => setHumidityLow(parseFloat(e.target.value))}
+                                className="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors duration-150"
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
+                    <div className="pt-4 text-center">
+                        <button 
+                            type="submit"
+                            className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-150 ease-in-out disabled:opacity-50"
+                            disabled={loading}
+                        >
+                            {loading ? "Saving..." : "🌿 Save Thresholds"}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );

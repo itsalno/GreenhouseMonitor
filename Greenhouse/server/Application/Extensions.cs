@@ -9,7 +9,6 @@ public static class Extensions
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ISecurityService, SecurityService>();
-        services.AddScoped<IWeatherStationService, WeatherStationService>();
         services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
         services.AddScoped<ISensorDataService, SensorDataService>();
         services.AddScoped<IThresholdsService, ThresholdsService>();

@@ -324,106 +324,19 @@
         }
       }
     },
-    "/GetLogs": {
+    "/api/sensor/AllThresholds": {
       "get": {
         "tags": [
-          "WeatherStation"
+          "Thresholds"
         ],
-        "operationId": "WeatherStation_GetLogs",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
+        "operationId": "Thresholds_GetAll",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Devicelog"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/AdminChangesPreferences": {
-      "post": {
-        "tags": [
-          "WeatherStation"
-        ],
-        "operationId": "WeatherStation_AdminChangesPreferences",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
-          }
-        ],
-        "requestBody": {
-          "x-name": "dto",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AdminChangesPreferencesDto"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/DeleteData": {
-      "delete": {
-        "tags": [
-          "WeatherStation"
-        ],
-        "operationId": "WeatherStation_DeleteData",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "$ref": "#/components/schemas/Thresholds"
                 }
               }
             }
@@ -547,44 +460,6 @@
           }
         }
       },
-      "Devicelog": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "deviceid": {
-            "type": "string"
-          },
-          "value": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "id": {
-            "type": "string"
-          },
-          "unit": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "AdminChangesPreferencesDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "deviceId": {
-            "type": "string"
-          },
-          "unit": {
-            "type": "string"
-          },
-          "interval": {
-            "type": "string"
-          }
-        }
-      },
       "ApplicationBaseDto": {
         "type": "object",
         "x-abstract": true,
@@ -594,6 +469,22 @@
             "type": "string"
           }
         }
+      },
+      "AdminHasDeletedData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApplicationBaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "ServerBroadcastsLiveDataToDashboard": {
         "allOf": [
@@ -617,7 +508,7 @@
           }
         ]
       },
-      "AdminHasDeletedData": {
+      "ThresholdUpdateBroadcastDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/ApplicationBaseDto"
@@ -628,6 +519,32 @@
             "properties": {
               "eventType": {
                 "type": "string"
+              },
+              "thresholdType": {
+                "type": "string"
+              },
+              "sensorId": {
+                "type": "string",
+                "nullable": true
+              },
+              "oldValue": {
+                "type": "number",
+                "format": "double"
+              },
+              "newValue": {
+                "type": "number",
+                "format": "double"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "changedByUserId": {
+                "type": "string",
+                "nullable": true
               }
             }
           }
@@ -738,8 +655,9 @@
         "type": "string",
         "description": "Available eventType and string constants",
         "enum": [
-          "ServerBroadcastsLiveDataToDashboard",
           "AdminHasDeletedData",
+          "ServerBroadcastsLiveDataToDashboard",
+          "ThresholdUpdateBroadcastDto",
           "MemberLeftNotification",
           "ExampleClientDto",
           "ExampleServerResponse",
@@ -747,6 +665,7 @@
           "Pong",
           "ServerSendsErrorMessage",
           "Dashboard",
+          "ThresholdsHistory",
           "Device",
           "ChangePreferences",
           "Log"

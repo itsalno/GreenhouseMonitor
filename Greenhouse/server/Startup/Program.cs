@@ -61,16 +61,18 @@ public class Program
         var logger = app.Services.GetRequiredService<ILogger<IOptionsMonitor<AppOptions>>>();
         var appOptions = app.Services.GetRequiredService<IOptionsMonitor<AppOptions>>().CurrentValue;
         logger.LogInformation(JsonSerializer.Serialize(appOptions));
+        
+        
         using (var scope = app.Services.CreateScope())
         {
             if (appOptions.Seed)
                 await scope.ServiceProvider.GetRequiredService<Seeder>().Seed();
         }
+        
 
         app.Urls.Clear();
         app.Urls.Add($"http://0.0.0.0:{appOptions.REST_PORT}");
 
-        // Determine the public port from the environment (for Render/Cloud Run), fallback to appOptions.PORT
         var publicPort = int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var envPort) ? envPort : appOptions.PORT;
 
         app.Services.GetRequiredService<IProxyConfig>()
